@@ -80,7 +80,7 @@ function Settings(props) {
         <img
           src={`https://autoapi.dezinfeksiyatashkent.uz/api/uploads/images/${src}`}
           alt=""
-          className="h-14"
+          className="h-16 w-16 object-cover"
         />
       ),
     },
