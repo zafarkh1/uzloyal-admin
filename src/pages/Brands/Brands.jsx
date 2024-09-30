@@ -106,7 +106,7 @@ function Brands(props) {
     {
       title: (
         <button
-          className="bg-blue-500 hover:bg-blue-400 text-white lg:py-2 py-1 lg:px-4 px-2 rounded-md lg:text-base text-sm"
+          className="hidden lg:block bg-blue-500 hover:bg-blue-400 text-white lg:py-2 py-1 lg:px-4 px-2 rounded-md lg:text-base text-sm"
           onClick={openCreateBrandModal}
         >
           Add brands
@@ -118,10 +118,7 @@ function Brands(props) {
 
   return (
     <>
-      <div className="flex mb-10 overflow-hidden lg:w-1/3">
-        {/* <button className="bg-gray-300 border-s lg:hover:bg-gray-300 lg:w-16 w-8 lg:h-10 h-8">
-          <SearchOutlined className="" />
-        </button> */}
+      <div className="flex lg:mb-10 overflow-hidden lg:w-1/3">
         <input
           type="search"
           placeholder="Search"
@@ -129,6 +126,12 @@ function Brands(props) {
           onChange={handleSearchInput}
         />
       </div>
+      <button
+        className="lg:hidden my-4 bg-blue-500 hover:bg-blue-400 text-white lg:py-2 py-1 lg:px-4 px-2 rounded-md lg:text-base text-sm"
+        onClick={openCreateBrandModal}
+      >
+        Add brands
+      </button>
       {brands.length > 0 ? (
         <Table
           columns={columns}

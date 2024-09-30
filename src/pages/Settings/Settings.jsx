@@ -111,7 +111,7 @@ function Settings(props) {
     {
       title: (
         <button
-          className="bg-blue-500 hover:bg-blue-400 text-white lg:py-2 py-1 lg:px-4 px-2 rounded-md lg:text-base text-sm"
+          className="hidden lg:block bg-blue-500 hover:bg-blue-400 text-white lg:py-2 py-1 lg:px-4 px-2 rounded-md lg:text-base text-sm"
           onClick={openCreateCategoryModal}
         >
           Add categories
@@ -123,7 +123,7 @@ function Settings(props) {
 
   return (
     <>
-      <div className="flex mb-10 overflow-hidden lg:w-1/3">
+      <div className="flex lg:mb-10 overflow-hidden lg:w-1/3">
         <input
           type="search"
           placeholder="Search"
@@ -131,6 +131,12 @@ function Settings(props) {
           onChange={handleSearchInput}
         />
       </div>
+      <button
+        className="lg:hidden my-4 bg-blue-500 hover:bg-blue-400 text-white lg:py-2 py-1 lg:px-4 px-2 rounded-md lg:text-base text-sm"
+        onClick={openCreateCategoryModal}
+      >
+        Add categories
+      </button>
       {categories.length > 0 ? (
         <Table
           columns={columns}

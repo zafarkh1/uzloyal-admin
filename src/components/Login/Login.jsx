@@ -43,9 +43,9 @@ function Login({ updateToken }) {
   };
 
   return (
-    <div className="h-screen flex justify-center items-center ">
+    <div className="h-screen flex justify-center items-center mx-8">
       <form
-        className="bg-[#fafafa] px-16 py-20 rounded-lg shadow-lg w-[25rem]"
+        className="bg-[#fafafa] lg:px-16 px-8 lg:py-20 py-16 rounded-lg shadow-lg lg:w-[25rem]"
         onSubmit={handleSubmit}
       >
         <div className="border-2 border-gray-400 px-3 py-4 bg-white mb-4 rounded-lg">

@@ -78,6 +78,7 @@ function Sidebar(props) {
           <img
             src="https://autozoom-admin-nine.vercel.app/assets/autozoom-CM99tOti.svg"
             alt="logo"
+            className="mb-4"
           />
         ) : (
           <p className="text-[#a6adb4] hover:text-white text-center lg:text-2xl font-semibold">
