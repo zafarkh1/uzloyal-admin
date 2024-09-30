@@ -7,7 +7,7 @@ import {
   // SearchOutlined,
 } from "@ant-design/icons";
 import { apiRequest } from "../../utils/api";
-import { useModal } from "../../zustand/Modal";
+import { useModal } from "../../zustand/ModalStore";
 import { SettingModal } from "../../utils/SettingModal";
 import { useIdStore } from "../../zustand/IdStore";
 
@@ -64,13 +64,13 @@ function Settings(props) {
       title: "name_en",
       dataIndex: "name_en",
       // key: "name",
-      render: (text) => <p>{text}</p>,
+      render: (text) => <p className="lg:text-base text-sm">{text}</p>,
     },
     {
       title: "name_ru",
       dataIndex: "name_ru",
       // key: "name",
-      render: (text) => <p>{text}</p>,
+      render: (text) => <p className="lg:text-base text-sm">{text}</p>,
     },
     {
       title: "Image",
@@ -80,7 +80,7 @@ function Settings(props) {
         <img
           src={`https://autoapi.dezinfeksiyatashkent.uz/api/uploads/images/${src}`}
           alt=""
-          className="h-16 w-16 object-cover"
+          className="lg:h-16 h-10 lg:w-16 w-10 object-cover"
         />
       ),
     },
@@ -91,7 +91,7 @@ function Settings(props) {
       render: (_, item) => (
         <div className="flex items-center gap-4">
           <div
-            className="bg-blue-500 hover:bg-blue-400 text-white cursor-pointer py-1 px-3 rounded-lg text-xl"
+            className="bg-blue-500 hover:bg-blue-400 text-white cursor-pointer py-1 lg:px-3 px-2 rounded-md lg:text-xl"
             onClick={() => {
               openEditCategoryModal();
               setCategoryId(item.id);
@@ -100,7 +100,7 @@ function Settings(props) {
             <EditOutlined />
           </div>
           <div
-            className="bg-rose-500 hover:bg-rose-400 text-white cursor-pointer py-1 px-3 rounded-lg text-xl"
+            className="bg-rose-500 hover:bg-rose-400 text-white cursor-pointer py-1 lg:px-3 px-2 rounded-md lg:text-xl"
             onClick={() => handleDelete(item.id)}
           >
             <DeleteOutlined />
@@ -111,7 +111,7 @@ function Settings(props) {
     {
       title: (
         <button
-          className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
+          className="bg-blue-500 hover:bg-blue-400 text-white lg:py-2 py-1 lg:px-4 px-2 rounded-md lg:text-base text-sm"
           onClick={openCreateCategoryModal}
         >
           Add categories
@@ -123,10 +123,7 @@ function Settings(props) {
 
   return (
     <>
-      <div className="flex mb-10 overflow-hidden w-1/3">
-        {/* <button className="bg-gray-300 border-s lg:hover:bg-gray-300 lg:w-16 w-8 lg:h-10 h-8">
-          <SearchOutlined className="" />
-        </button> */}
+      <div className="flex mb-10 overflow-hidden lg:w-1/3">
         <input
           type="search"
           placeholder="Search"
@@ -140,6 +137,7 @@ function Settings(props) {
           dataSource={searchQuery.length > 0 ? searchedData : categories}
           rowKey={"id"}
           className=""
+          scroll={{ x: 800 }}
         />
       ) : (
         <p>Loading ...</p>

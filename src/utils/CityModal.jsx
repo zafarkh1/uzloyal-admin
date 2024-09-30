@@ -4,26 +4,26 @@ import { Modal, message } from "antd";
 import { apiRequest } from "./api";
 import { useIdStore } from "../zustand/IdStore";
 
-export function SettingModal({ getApi, data }) {
-  const [nameEn, setNameEn] = useState("");
-  const [nameRu, setNameRu] = useState("");
+export function CityModal({ getApi, data }) {
+  const [name, setName] = useState("");
+  const [text, setText] = useState("");
   const [image, setImage] = useState(null);
   const [errors, setErrors] = useState({});
   const imgRef = useRef(null);
   const {
-    isCreateCategoryOpen,
-    isEditCategoryOpen,
-    closeCreateCategoryModal,
-    closeEditCategoryModal,
+    isCreateCityOpen,
+    isEditCityOpen,
+    closeCreateCityModal,
+    closeEditCityModal,
   } = useModal();
-  const { categoryId, setCategoryId } = useIdStore();
+  const { cityId, setCityId } = useIdStore();
 
-  const item = data.find((el) => el.id === categoryId);
+  const item = data.find((el) => el.id === cityId);
 
   useEffect(() => {
     if (item) {
-      setNameEn(item.name_en || "");
-      setNameRu(item.name_ru || "");
+      setName(item.name || "");
+      setText(item.text || "");
       setImage(null);
     }
   }, [item]);
@@ -31,21 +31,20 @@ export function SettingModal({ getApi, data }) {
   const formValidation = () => {
     const formErrors = {};
 
-    if (!nameEn.trim()) {
-      formErrors.nameEn = "English name is required";
-    } else if (nameEn.length < 2 || nameEn.length > 50) {
-      formErrors.nameEn = "English name must be between 2 and 50 characters";
-    } else if (!/^[a-zA-Z\s]+$/.test(nameEn)) {
-      formErrors.nameEn = "English name must contain only letters and spaces";
+    if (!name.trim()) {
+      formErrors.name = "Name is required";
+    } else if (name.length < 2 || name.length > 50) {
+      formErrors.name = "Name must be between 2 and 50 characters";
+    } else if (!/^[\p{L}\s]+$/u.test(name)) {
+      formErrors.name = "Name must contain only letters and spaces";
     }
 
-    if (!nameRu.trim()) {
-      formErrors.nameRu = "Russian name is required";
-    } else if (nameRu.length < 2 || nameRu.length > 50) {
-      formErrors.nameRu = "Russian name must be between 2 and 50 characters";
-    } else if (!/^[а-яА-ЯёЁ\s]+$/.test(nameRu)) {
-      formErrors.nameRu =
-        "Russian name must contain only Cyrillic letters and spaces";
+    if (!text.trim()) {
+      formErrors.text = "Text is required";
+    } else if (text.length < 2 || text.length > 50) {
+      formErrors.text = "Text must be between 2 and 50 characters";
+    } else if (!/^[\p{L}\s]+$/u.test(text)) {
+      formErrors.text = "Text must contain only Cyrillic letters and spaces";
     }
 
     if (!image) {
@@ -65,17 +64,17 @@ export function SettingModal({ getApi, data }) {
 
     if (formValidation()) {
       const formData = new FormData();
-      formData.append("name_en", nameEn);
-      formData.append("name_ru", nameRu);
+      formData.append("name", name);
+      formData.append("text", text);
       formData.append("images", image);
 
       try {
-        await apiRequest("categories", "Post", formData);
+        await apiRequest("cities", "Post", formData);
         handleCloseModal();
-        message.success("Category added successfully!");
+        message.success("City added successfully!");
         getApi();
       } catch (error) {
-        message.error("Failed to add category");
+        message.error("Failed to add city");
       }
     } else {
       message.error("Please fix validation errors");
@@ -87,17 +86,17 @@ export function SettingModal({ getApi, data }) {
 
     if (formValidation()) {
       const formData = new FormData();
-      formData.append("name_en", nameEn);
-      formData.append("name_ru", nameRu);
+      formData.append("name", name);
+      formData.append("text", text);
       formData.append("images", image);
 
       try {
-        await apiRequest(`categories/${categoryId}`, "Put", formData);
+        await apiRequest(`cities/${cityId}`, "Put", formData);
         handleCloseModal();
-        message.success("Category updated successfully!");
+        message.success("City updated successfully!");
         getApi();
       } catch (error) {
-        message.error("Failed to updated category");
+        message.error("Failed to updated city");
       }
     } else {
       message.error("Please fix validation errors");
@@ -105,55 +104,57 @@ export function SettingModal({ getApi, data }) {
   };
 
   const handleCloseModal = () => {
-    setNameEn("");
-    setNameRu("");
+    setName("");
+    setText("");
     setImage(null);
     setErrors("");
-    closeEditCategoryModal();
-    closeCreateCategoryModal();
-    setCategoryId("");
+    closeEditCityModal();
+    closeCreateCityModal();
+    setCityId("");
   };
 
   return (
     <div>
       <Modal
         title=""
-        open={categoryId ? isEditCategoryOpen : isCreateCategoryOpen}
-        onOk={categoryId ? handleUpdateSubmit : handleCreateSubmit}
+        open={cityId ? isEditCityOpen : isCreateCityOpen}
+        onOk={cityId ? handleUpdateSubmit : handleCreateSubmit}
         onCancel={handleCloseModal}
       >
         <h5 className="text-xl font-semibold text-center">
-          {categoryId ? "Edit category" : "Adding category"}
+          {cityId ? "Edit item" : "Adding item"}
         </h5>
         <form className="flex flex-col gap-2 mt-4">
           {/* English Name */}
-          <label htmlFor="name_en">* English Name</label>
+          <label htmlFor="name">* Name</label>
           <input
             type="text"
-            id="name_en"
-            className={`border-2 rounded-lg outline-none py-2 px-4 lg:text-base text-sm ${
-              errors.nameEn ? "border-red-500" : "border-gray-300"
+            id="name"
+            className={`border-2 rounded-lg outline-none py-2 px-4 ${
+              errors.name ? "border-red-500" : "border-gray-300"
             } focus:ring-blue-500 focus:border-blue-500 text-gray-900`}
-            onChange={(e) => setNameEn(e.target.value)}
-            value={nameEn}
+            onChange={(e) => setName(e.target.value)}
+            value={name}
           />
-          {errors.nameEn && (
-            <span className="text-red-500 text-sm">{errors.nameEn}</span>
+          {errors.name && (
+            <span className="text-red-500 text-sm">{errors.name}</span>
           )}
 
-          {/* Russian Name */}
-          <label htmlFor="name_ru">* Russian Name</label>
-          <input
+          {/* Text */}
+          <label htmlFor="text">* Text</label>
+          <textarea
+            rows={4}
+            cols={30}
             type="text"
-            id="name_ru"
-            className={`border-2 rounded-lg outline-none py-2 px-4 lg:text-base text-sm ${
-              errors.nameRu ? "border-red-500" : "border-gray-300"
+            id="text"
+            className={`border-2 rounded-lg outline-none py-2 px-4 ${
+              errors.text ? "border-red-500" : "border-gray-300"
             } focus:ring-blue-500 focus:border-blue-500 text-gray-900`}
-            onChange={(e) => setNameRu(e.target.value)}
-            value={nameRu}
+            onChange={(e) => setText(e.target.value)}
+            value={text}
           />
-          {errors.nameRu && (
-            <span className="text-red-500 text-sm">{errors.nameRu}</span>
+          {errors.text && (
+            <span className="text-red-500 text-sm">{errors.text}</span>
           )}
 
           {/* Image Upload */}

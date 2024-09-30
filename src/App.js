@@ -8,7 +8,7 @@ import Locations from "./pages/Locations/Locations";
 import Models from "./pages/Models/Models";
 import Settings from "./pages/Settings/Settings";
 import Login from "./components/Login/Login";
-import { useTokenStore } from "./zustand/Token";
+import { useTokenStore } from "./zustand/TokenStore";
 
 function App() {
   const { token } = useTokenStore();

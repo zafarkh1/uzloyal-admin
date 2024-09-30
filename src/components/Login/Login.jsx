@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { apiRequest } from "../../utils/api";
-import { useTokenStore } from "../../zustand/Token";
+import { useTokenStore } from "../../zustand/TokenStore";
 import { message } from "antd";
 
 function Login({ updateToken }) {

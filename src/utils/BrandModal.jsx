@@ -4,26 +4,24 @@ import { Modal, message } from "antd";
 import { apiRequest } from "./api";
 import { useIdStore } from "../zustand/IdStore";
 
-export function SettingModal({ getApi, data }) {
-  const [nameEn, setNameEn] = useState("");
-  const [nameRu, setNameRu] = useState("");
+export function BrandModal({ getApi, data }) {
+  const [title, setTitle] = useState("");
   const [image, setImage] = useState(null);
   const [errors, setErrors] = useState({});
   const imgRef = useRef(null);
   const {
-    isCreateCategoryOpen,
-    isEditCategoryOpen,
-    closeCreateCategoryModal,
-    closeEditCategoryModal,
+    isCreateBrandOpen,
+    isEditBrandOpen,
+    closeCreateBrandModal,
+    closeEditBrandModal,
   } = useModal();
-  const { categoryId, setCategoryId } = useIdStore();
+  const { brandId, setBrandId } = useIdStore();
 
-  const item = data.find((el) => el.id === categoryId);
+  const item = data.find((el) => el.id === brandId);
 
   useEffect(() => {
     if (item) {
-      setNameEn(item.name_en || "");
-      setNameRu(item.name_ru || "");
+      setTitle(item.title || "");
       setImage(null);
     }
   }, [item]);
@@ -31,21 +29,12 @@ export function SettingModal({ getApi, data }) {
   const formValidation = () => {
     const formErrors = {};
 
-    if (!nameEn.trim()) {
-      formErrors.nameEn = "English name is required";
-    } else if (nameEn.length < 2 || nameEn.length > 50) {
-      formErrors.nameEn = "English name must be between 2 and 50 characters";
-    } else if (!/^[a-zA-Z\s]+$/.test(nameEn)) {
-      formErrors.nameEn = "English name must contain only letters and spaces";
-    }
-
-    if (!nameRu.trim()) {
-      formErrors.nameRu = "Russian name is required";
-    } else if (nameRu.length < 2 || nameRu.length > 50) {
-      formErrors.nameRu = "Russian name must be between 2 and 50 characters";
-    } else if (!/^[а-яА-ЯёЁ\s]+$/.test(nameRu)) {
-      formErrors.nameRu =
-        "Russian name must contain only Cyrillic letters and spaces";
+    if (!title.trim()) {
+      formErrors.title = "Title is required";
+    } else if (title.length < 2 || title.length > 50) {
+      formErrors.title = "Title must be between 2 and 50 characters";
+    } else if (!/^[\p{L}\s]+$/u.test(title)) {
+      formErrors.title = "Title must contain only letters and spaces";
     }
 
     if (!image) {
@@ -65,17 +54,16 @@ export function SettingModal({ getApi, data }) {
 
     if (formValidation()) {
       const formData = new FormData();
-      formData.append("name_en", nameEn);
-      formData.append("name_ru", nameRu);
+      formData.append("title", title);
       formData.append("images", image);
 
       try {
-        await apiRequest("categories", "Post", formData);
+        await apiRequest("brands", "Post", formData);
         handleCloseModal();
-        message.success("Category added successfully!");
+        message.success("Brands added successfully!");
         getApi();
       } catch (error) {
-        message.error("Failed to add category");
+        message.error("Failed to add brands");
       }
     } else {
       message.error("Please fix validation errors");
@@ -87,17 +75,16 @@ export function SettingModal({ getApi, data }) {
 
     if (formValidation()) {
       const formData = new FormData();
-      formData.append("name_en", nameEn);
-      formData.append("name_ru", nameRu);
+      formData.append("title", title);
       formData.append("images", image);
 
       try {
-        await apiRequest(`categories/${categoryId}`, "Put", formData);
+        await apiRequest(`brands/${brandId}`, "Put", formData);
         handleCloseModal();
-        message.success("Category updated successfully!");
+        message.success("Brands updated successfully!");
         getApi();
       } catch (error) {
-        message.error("Failed to updated category");
+        message.error("Failed to updated brands");
       }
     } else {
       message.error("Please fix validation errors");
@@ -105,55 +92,39 @@ export function SettingModal({ getApi, data }) {
   };
 
   const handleCloseModal = () => {
-    setNameEn("");
-    setNameRu("");
+    setTitle("");
     setImage(null);
     setErrors("");
-    closeEditCategoryModal();
-    closeCreateCategoryModal();
-    setCategoryId("");
+    closeEditBrandModal();
+    closeCreateBrandModal();
+    setBrandId("");
   };
 
   return (
     <div>
       <Modal
         title=""
-        open={categoryId ? isEditCategoryOpen : isCreateCategoryOpen}
-        onOk={categoryId ? handleUpdateSubmit : handleCreateSubmit}
+        open={brandId ? isEditBrandOpen : isCreateBrandOpen}
+        onOk={brandId ? handleUpdateSubmit : handleCreateSubmit}
         onCancel={handleCloseModal}
       >
         <h5 className="text-xl font-semibold text-center">
-          {categoryId ? "Edit category" : "Adding category"}
+          {brandId ? "Edit item" : "Adding item"}
         </h5>
         <form className="flex flex-col gap-2 mt-4">
           {/* English Name */}
-          <label htmlFor="name_en">* English Name</label>
+          <label htmlFor="title">* Title</label>
           <input
             type="text"
-            id="name_en"
-            className={`border-2 rounded-lg outline-none py-2 px-4 lg:text-base text-sm ${
-              errors.nameEn ? "border-red-500" : "border-gray-300"
+            id="title"
+            className={`border-2 rounded-lg outline-none py-2 px-4 ${
+              errors.brand ? "border-red-500" : "border-gray-300"
             } focus:ring-blue-500 focus:border-blue-500 text-gray-900`}
-            onChange={(e) => setNameEn(e.target.value)}
-            value={nameEn}
+            onChange={(e) => setTitle(e.target.value)}
+            value={title}
           />
-          {errors.nameEn && (
-            <span className="text-red-500 text-sm">{errors.nameEn}</span>
-          )}
-
-          {/* Russian Name */}
-          <label htmlFor="name_ru">* Russian Name</label>
-          <input
-            type="text"
-            id="name_ru"
-            className={`border-2 rounded-lg outline-none py-2 px-4 lg:text-base text-sm ${
-              errors.nameRu ? "border-red-500" : "border-gray-300"
-            } focus:ring-blue-500 focus:border-blue-500 text-gray-900`}
-            onChange={(e) => setNameRu(e.target.value)}
-            value={nameRu}
-          />
-          {errors.nameRu && (
-            <span className="text-red-500 text-sm">{errors.nameRu}</span>
+          {errors.brand && (
+            <span className="text-red-500 text-sm">{errors.brand}</span>
           )}
 
           {/* Image Upload */}

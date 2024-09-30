@@ -6,15 +6,12 @@ import Footer from "../components/Footer/Footer";
 function Layout(props) {
   return (
     <>
-      <h1 className="text-5xl lg:hidden">There is no responsiveness</h1>
-
-      <div className="lg:flex h-screen relative hidden">
-        {" "}
+      <div className="flex h-screen">
         <Sidebar />
         <div className="flex flex-col w-full overflow-y-scroll">
           <Navbar />
-          <main className="flex-grow bg-[#e3effe]">
-            <div className="px-8 py-4 my-24">
+          <main className="flex-grow bg-[#e3effe] pt-[5rem]">
+            <div className="lg:px-8 px-4 lg:py-4 py-2">
               <Outlet />
             </div>
           </main>

@@ -69,7 +69,7 @@ function Sidebar(props) {
 
   return (
     <div
-      className={`h-screen bg-[#001529] pt-4 transition-all duration-500 ${
+      className={`relative z-20 h-screen bg-[#001529] pt-4 transition-all duration-500 ${
         isSidebarCollapse ? "w-20" : "w-80"
       }`}
     >

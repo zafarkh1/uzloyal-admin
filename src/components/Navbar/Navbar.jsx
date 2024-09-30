@@ -5,25 +5,28 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { useSidebarCollapse } from "../../zustand/SidebarCollapseStore";
-import { useTokenStore } from "../../zustand/Token";
+import { useTokenStore } from "../../zustand/TokenStore";
 
 function Navbar(props) {
   const { isSidebarCollapse, toggleSidebarCollapse } = useSidebarCollapse();
   const clearToken = useTokenStore((state) => state.clearToken);
 
   return (
-    <div
-      className={`absolute z-10 right-0 top-0 shadow bg-white flex sm:justify-between justify-center items-center py-4 px-8 ${
-        isSidebarCollapse ? "left-[5rem]" : "left-[16.6rem]"
-      }`}
-    >
-      <Button
-        type="primary"
-        onClick={toggleSidebarCollapse}
-        className="hidden sm:block"
+    <div className="fixed z-10 right-0 top-0 w-full shadow bg-white flex sm:justify-between justify-center items-center py-4 px-8">
+      <div
+        className={`transition-all duration-300 ${
+          isSidebarCollapse ? "ml-[5rem]" : "ml-[16.6rem]"
+        }`}
       >
-        {isSidebarCollapse ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-      </Button>
+        <Button
+          type="primary"
+          onClick={toggleSidebarCollapse}
+          className="hidden sm:block"
+        >
+          {isSidebarCollapse ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+        </Button>
+      </div>
+
       <div className="relative flex items-center gap-4 border sm:px-6 px-3 py-1 rounded-lg cursor-pointer group">
         <UserOutlined
           style={{ fontSize: "1.2rem" }}
