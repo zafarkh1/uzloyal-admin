@@ -28,4 +28,11 @@ export const useModal = create((set) => ({
   openEditCityModal: () => set({ isEditCityOpen: true }),
   closeCreateCityModal: () => set({ isCreateCityOpen: false }),
   closeEditCityModal: () => set({ isEditCityOpen: false }),
+
+  isCreateCarOpen: false,
+  isEditCarOpen: false,
+  openCreateCarModal: () => set({ isCreateCarOpen: true }),
+  openEditCarModal: () => set({ isEditCarOpen: true }),
+  closeCreateCarModal: () => set({ isCreateCarOpen: false }),
+  closeEditCarModal: () => set({ isEditCarOpen: false }),
 }));

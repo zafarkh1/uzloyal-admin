@@ -1,4 +1,4 @@
-import { HiLocationMarker, HiOfficeBuilding } from "react-icons/hi";
+import { HiOfficeBuilding } from "react-icons/hi";
 import { Menu } from "antd";
 import {
   HomeOutlined,
@@ -34,12 +34,6 @@ const items = [
     icon: <SnippetsOutlined style={{ fontSize: "1.2rem" }} />,
     label: "Models",
     link: "/models",
-  },
-  {
-    key: "5",
-    icon: <HiLocationMarker style={{ fontSize: "1.2rem" }} />,
-    label: "Locations",
-    link: "/locations",
   },
   {
     key: "6",

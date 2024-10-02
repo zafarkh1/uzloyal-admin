@@ -12,4 +12,7 @@ export const useIdStore = create((set) => ({
 
   cityId: "",
   setCityId: (id) => set({ cityId: id }),
+
+  carId: "",
+  setCarId: (id) => set({ carId: id }),
 }));

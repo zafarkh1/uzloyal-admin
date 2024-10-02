@@ -1,40 +1,42 @@
 import { useEffect, useState } from "react";
 import debounce from "lodash.debounce";
 import { message, Table } from "antd";
-import {
-  EditOutlined,
-  DeleteOutlined,
-  // SearchOutlined,
-} from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { apiRequest } from "../../utils/api";
 import { useModal } from "../../zustand/ModalStore";
 import { useIdStore } from "../../zustand/IdStore";
 import { BrandModal } from "../../utils/BrandModal";
-// import { useBrandStore } from "../../zustand/BrandStore";
 
 function Brands(props) {
   const [brands, setBrands] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchedData, setSearchedData] = useState([]);
+  const [loading, setLoading] = useState(false);
   const { openCreateBrandModal, openEditBrandModal } = useModal();
   const { setBrandId } = useIdStore();
 
   const fetchBrands = async () => {
+    setLoading(true);
     try {
       const fetchedBrands = await apiRequest("brands");
       setBrands(fetchedBrands?.data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
+    setLoading(true);
     try {
       await apiRequest(`brands/${id}`, "Delete");
       message.success("Brand deleted successfully!");
       fetchBrands();
     } catch (error) {
       message.error("Failed to delete brand");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,7 +55,6 @@ function Brands(props) {
     const query = e.target.value;
     setSearchQuery(query);
     debouncedSearch(query);
-    // setShowError(false);
   };
 
   useEffect(() => {
@@ -64,13 +65,11 @@ function Brands(props) {
     {
       title: "Title",
       dataIndex: "title",
-      // key: "name",
       render: (text) => <p className="lg:text-base text-sm">{text}</p>,
     },
     {
       title: "Image",
       dataIndex: "image_src",
-      // key: "name",
       render: (src) => (
         <img
           src={`https://autoapi.dezinfeksiyatashkent.uz/api/uploads/images/${src}`}
@@ -82,7 +81,6 @@ function Brands(props) {
     {
       title: "Action",
       dataIndex: "",
-      // key: "name",
       render: (_, item) => (
         <div className="flex items-center gap-4">
           <div
@@ -132,17 +130,13 @@ function Brands(props) {
       >
         Add brands
       </button>
-      {brands.length > 0 ? (
-        <Table
-          columns={columns}
-          dataSource={searchQuery.length > 0 ? searchedData : brands}
-          rowKey={"id"}
-          className=""
-          scroll={{ x: 800 }}
-        />
-      ) : (
-        <p>Loading ...</p>
-      )}
+      <Table
+        loading={loading}
+        columns={columns}
+        dataSource={searchQuery.length > 0 ? searchedData : brands}
+        rowKey={"id"}
+        scroll={{ x: 800 }}
+      />
       <BrandModal getApi={fetchBrands} data={brands} />
     </>
   );

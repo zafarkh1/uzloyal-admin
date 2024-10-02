@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import debounce from "lodash.debounce";
 import { message, Table } from "antd";
-import {
-  EditOutlined,
-  DeleteOutlined,
-  // SearchOutlined,
-} from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { apiRequest } from "../../utils/api";
 import { useModal } from "../../zustand/ModalStore";
 import { SettingModal } from "../../utils/SettingModal";
@@ -15,25 +11,36 @@ function Settings(props) {
   const [categories, setCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchedData, setSearchedData] = useState([]);
+  const [loading, setLoading] = useState(false);
   const { openCreateCategoryModal, openEditCategoryModal } = useModal();
   const { setCategoryId } = useIdStore();
 
   const fetchCategories = async () => {
+    setLoading(true);
     try {
       const fetchedCategories = await apiRequest("categories");
       setCategories(fetchedCategories.data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
   const handleDelete = async (id) => {
+    setLoading(true);
     try {
       await apiRequest(`categories/${id}`, "Delete");
       message.success("Category deleted successfully!");
       fetchCategories();
     } catch (error) {
       message.error("Failed to delete category");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,30 +59,22 @@ function Settings(props) {
     const query = e.target.value;
     setSearchQuery(query);
     debouncedSearch(query);
-    // setShowError(false);
   };
-
-  useEffect(() => {
-    fetchCategories();
-  }, []);
 
   const columns = [
     {
       title: "name_en",
       dataIndex: "name_en",
-      // key: "name",
       render: (text) => <p className="lg:text-base text-sm">{text}</p>,
     },
     {
       title: "name_ru",
       dataIndex: "name_ru",
-      // key: "name",
       render: (text) => <p className="lg:text-base text-sm">{text}</p>,
     },
     {
       title: "Image",
       dataIndex: "image_src",
-      // key: "name",
       render: (src) => (
         <img
           src={`https://autoapi.dezinfeksiyatashkent.uz/api/uploads/images/${src}`}
@@ -87,7 +86,6 @@ function Settings(props) {
     {
       title: "Action",
       dataIndex: "",
-      // key: "name",
       render: (_, item) => (
         <div className="flex items-center gap-4">
           <div
@@ -137,17 +135,13 @@ function Settings(props) {
       >
         Add categories
       </button>
-      {categories.length > 0 ? (
-        <Table
-          columns={columns}
-          dataSource={searchQuery.length > 0 ? searchedData : categories}
-          rowKey={"id"}
-          className=""
-          scroll={{ x: 800 }}
-        />
-      ) : (
-        <p>Loading ...</p>
-      )}
+      <Table
+        loading={loading}
+        columns={columns}
+        dataSource={searchQuery.length > 0 ? searchedData : categories}
+        rowKey={"id"}
+        scroll={{ x: 800 }}
+      />
       <SettingModal getApi={fetchCategories} data={categories} />
     </>
   );

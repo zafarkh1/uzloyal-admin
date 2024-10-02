@@ -4,7 +4,6 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import Cars from "./pages/Cars/Cars";
 import Cities from "./pages/Cities/Cities";
 import Brands from "./pages/Brands/Brands";
-import Locations from "./pages/Locations/Locations";
 import Models from "./pages/Models/Models";
 import Settings from "./pages/Settings/Settings";
 import Login from "./components/Login/Login";
@@ -23,7 +22,6 @@ function App() {
             <Route path="cars" element={<Cars />} />
             <Route path="cities" element={<Cities />} />
             <Route path="brands" element={<Brands />} />
-            <Route path="locations" element={<Locations />} />
             <Route path="models" element={<Models />} />
           </Route>
         </Routes>

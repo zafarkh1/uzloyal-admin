@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import debounce from "lodash.debounce";
 import { message, Table } from "antd";
-import {
-  EditOutlined,
-  DeleteOutlined,
-  // SearchOutlined,
-} from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { apiRequest } from "../../utils/api";
 import { useModal } from "../../zustand/ModalStore";
 import { useIdStore } from "../../zustand/IdStore";
@@ -15,25 +11,32 @@ function Cities(props) {
   const [cities, setCities] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchedData, setSearchedData] = useState([]);
+  const [loading, setLoading] = useState(false);
   const { openCreateCityModal, openEditCityModal } = useModal();
   const { setCityId } = useIdStore();
 
   const fetchCities = async () => {
+    setLoading(true);
     try {
       const fetchedCities = await apiRequest("cities");
       setCities(fetchedCities.data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
+    setLoading(true);
     try {
       await apiRequest(`cities/${id}`, "Delete");
       message.success("City deleted successfully!");
       fetchCities();
     } catch (error) {
       message.error("Failed to delete city");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,7 +55,6 @@ function Cities(props) {
     const query = e.target.value;
     setSearchQuery(query);
     debouncedSearch(query);
-    // setShowError(false);
   };
 
   useEffect(() => {
@@ -68,19 +70,16 @@ function Cities(props) {
     {
       title: "Name",
       dataIndex: "name",
-      // key: "name",
       render: (text) => <p className="lg:text-base text-sm">{text}</p>,
     },
     {
       title: "Text",
       dataIndex: "text",
-      // key: "name",
       render: (text) => <p className="lg:text-base text-sm">{text}</p>,
     },
     {
       title: "Image",
       dataIndex: "image_src",
-      // key: "name",
       render: (src) => (
         <img
           src={`https://autoapi.dezinfeksiyatashkent.uz/api/uploads/images/${src}`}
@@ -92,7 +91,6 @@ function Cities(props) {
     {
       title: "Action",
       dataIndex: "",
-      // key: "name",
       render: (_, item) => (
         <div className="flex items-center gap-4">
           <div
@@ -129,9 +127,6 @@ function Cities(props) {
   return (
     <>
       <div className="flex lg:mb-10 overflow-hidden lg:w-1/3">
-        {/* <button className="bg-gray-300 border-s lg:hover:bg-gray-300 lg:w-16 w-8 lg:h-10 h-8">
-          <SearchOutlined className="" />
-        </button> */}
         <input
           type="search"
           placeholder="Search"
@@ -145,17 +140,13 @@ function Cities(props) {
       >
         Add cities
       </button>
-      {cities.length > 0 ? (
-        <Table
-          columns={columns}
-          dataSource={searchQuery.length > 0 ? searchedData : cities}
-          rowKey={"id"}
-          className=""
-          scroll={{ x: 800 }}
-        />
-      ) : (
-        <p>Loading ...</p>
-      )}
+      <Table
+        loading={loading}
+        columns={columns}
+        dataSource={searchQuery.length > 0 ? searchedData : cities}
+        rowKey={"id"}
+        scroll={{ x: 800 }}
+      />
       <CityModal getApi={fetchCities} data={cities} />
     </>
   );
