@@ -1,25 +1,24 @@
 import { useEffect, useState } from "react";
 import debounce from "lodash.debounce";
 import { message, Table } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { apiRequest } from "../../utils/api";
 import { useModal } from "../../zustand/ModalStore";
-import { SettingModal } from "../../utils/SettingModal";
 import { useIdStore } from "../../zustand/IdStore";
+import { SourceModal } from "../../utils/SourceModal";
 
-function Settings(props) {
-  const [categories, setCategories] = useState([]);
+function Sources(props) {
+  const [sources, setSources] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchedData, setSearchedData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { openCreateCategoryModal, openEditCategoryModal } = useModal();
-  const { setCategoryId } = useIdStore();
+  const { openCreateCarModal, openEditCarModal } = useModal();
+  const { setSourceId } = useIdStore();
 
-  const fetchCategories = async () => {
+  const fetchSources = async () => {
     setLoading(true);
     try {
-      const fetchedCategories = await apiRequest("categories");
-      setCategories(fetchedCategories.data);
+      const fetchedSources = await apiRequest("sources");
+      setSources(fetchedSources.data);
     } catch (error) {
       console.error(error);
     } finally {
@@ -27,18 +26,14 @@ function Settings(props) {
     }
   };
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
   const handleDelete = async (id) => {
     setLoading(true);
     try {
-      await apiRequest(`categories/${id}`, "Delete");
-      message.success("Category deleted successfully!");
-      fetchCategories();
+      await apiRequest(`sources/${id}`, "Delete");
+      message.success("Source deleted successfully!");
+      fetchSources();
     } catch (error) {
-      message.error("Failed to delete category");
+      message.error("Failed to delete source");
     } finally {
       setLoading(false);
     }
@@ -46,8 +41,8 @@ function Settings(props) {
 
   const debouncedSearch = debounce((query) => {
     if (query.length > 0) {
-      const filteredData = categories.filter((f) =>
-        f.name_en.toLowerCase().includes(query.toLowerCase())
+      const filteredData = sources.filter((f) =>
+        f.title.toLowerCase().includes(query.toLowerCase())
       );
       setSearchedData(filteredData);
     } else {
@@ -61,27 +56,38 @@ function Settings(props) {
     debouncedSearch(query);
   };
 
+  useEffect(() => {
+    fetchSources();
+  }, []);
+
   const columns = [
     {
-      title: "name_en",
-      dataIndex: "name_en",
-      render: (text) => <p className="lg:text-base text-sm">{text}</p>,
-    },
-    {
-      title: "name_ru",
-      dataIndex: "name_ru",
-      render: (text) => <p className="lg:text-base text-sm">{text}</p>,
+      title: "№",
+      dataIndex: "",
+      render: (_, data, index) => (
+        <p className="lg:text-base text-sm">{index + 1}</p>
+      ),
     },
     {
       title: "Image",
-      dataIndex: "image_src",
+      dataIndex: "src",
       render: (src) => (
         <img
-          src={`https://autoapi.dezinfeksiyatashkent.uz/api/uploads/images/${src}`}
-          alt=""
+          src={`https://api.dezinfeksiyatashkent.uz/api/uploads/images/${src}`}
+          alt="ee"
           className="lg:h-16 h-10 lg:w-16 w-10 object-cover"
         />
       ),
+    },
+    {
+      title: "Title",
+      dataIndex: "title",
+      render: (text) => <p className="lg:text-base text-sm">{text}</p>,
+    },
+    {
+      title: "Category",
+      dataIndex: "category_name",
+      render: (text) => <p className="lg:text-base text-sm">{text}</p>,
     },
     {
       title: "Action",
@@ -89,19 +95,19 @@ function Settings(props) {
       render: (_, item) => (
         <div className="flex items-center gap-4">
           <div
-            className="bg-blue-500 hover:bg-blue-400 text-white cursor-pointer py-1 lg:px-3 px-2 rounded-md lg:text-xl"
+            className="bg-blue-500 hover:bg-blue-400 text-white cursor-pointer py-1 lg:px-3 px-2 rounded-md"
             onClick={() => {
-              openEditCategoryModal();
-              setCategoryId(item.id);
+              openEditCarModal();
+              setSourceId(item.id);
             }}
           >
-            <EditOutlined />
+            Edit
           </div>
           <div
-            className="bg-rose-500 hover:bg-rose-400 text-white cursor-pointer py-1 lg:px-3 px-2 rounded-md lg:text-xl"
+            className="bg-rose-500 hover:bg-rose-400 text-white cursor-pointer py-1 lg:px-3 px-2 rounded-md"
             onClick={() => handleDelete(item.id)}
           >
-            <DeleteOutlined />
+            Delete
           </div>
         </div>
       ),
@@ -110,9 +116,9 @@ function Settings(props) {
       title: (
         <button
           className="hidden lg:block bg-blue-500 hover:bg-blue-400 text-white lg:py-2 py-1 lg:px-4 px-2 rounded-md lg:text-base text-sm"
-          onClick={openCreateCategoryModal}
+          onClick={openCreateCarModal}
         >
-          Add categories
+          Add sources
         </button>
       ),
       dataIndex: "key",
@@ -131,20 +137,20 @@ function Settings(props) {
       </div>
       <button
         className="lg:hidden my-4 bg-blue-500 hover:bg-blue-400 text-white lg:py-2 py-1 lg:px-4 px-2 rounded-md lg:text-base text-sm"
-        onClick={openCreateCategoryModal}
+        onClick={openCreateCarModal}
       >
-        Add categories
+        Add sources
       </button>
       <Table
         loading={loading}
         columns={columns}
-        dataSource={searchQuery.length > 0 ? searchedData : categories}
+        dataSource={searchQuery.length > 0 ? searchedData : sources}
         rowKey={"id"}
         scroll={{ x: 800 }}
       />
-      <SettingModal getApi={fetchCategories} data={categories} />
+      <SourceModal getApi={fetchSources} data={sources} />
     </>
   );
 }
 
-export default Settings;
+export default Sources;

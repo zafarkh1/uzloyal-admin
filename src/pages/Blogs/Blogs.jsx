@@ -1,25 +1,24 @@
 import { useEffect, useState } from "react";
 import debounce from "lodash.debounce";
 import { message, Table } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { apiRequest } from "../../utils/api";
 import { useModal } from "../../zustand/ModalStore";
 import { useIdStore } from "../../zustand/IdStore";
-import { CityModal } from "../../utils/CityModal";
+import { BlogModal } from "../../utils/BLogModal";
 
-function Cities(props) {
-  const [cities, setCities] = useState([]);
+function Blogs(props) {
+  const [blogs, setblogs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchedData, setSearchedData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { openCreateCityModal, openEditCityModal } = useModal();
-  const { setCityId } = useIdStore();
+  const { openCreateModelModal, openEditModelModal } = useModal();
+  const { setBlogsId } = useIdStore();
 
-  const fetchCities = async () => {
+  const fetchblogs = async () => {
     setLoading(true);
     try {
-      const fetchedCities = await apiRequest("cities");
-      setCities(fetchedCities.data);
+      const fetchedblogs = await apiRequest("blogs");
+      setblogs(fetchedblogs.data);
     } catch (error) {
       console.error(error);
     } finally {
@@ -30,11 +29,11 @@ function Cities(props) {
   const handleDelete = async (id) => {
     setLoading(true);
     try {
-      await apiRequest(`cities/${id}`, "Delete");
-      message.success("City deleted successfully!");
-      fetchCities();
+      await apiRequest(`blogs/${id}`, "Delete");
+      message.success("blogs deleted successfully!");
+      fetchblogs();
     } catch (error) {
-      message.error("Failed to delete city");
+      message.error("Failed to delete blogs");
     } finally {
       setLoading(false);
     }
@@ -42,8 +41,8 @@ function Cities(props) {
 
   const debouncedSearch = debounce((query) => {
     if (query.length > 0) {
-      const filteredData = cities.filter((f) =>
-        f.name.toLowerCase().includes(query.toLowerCase())
+      const filteredData = blogs.filter((f) =>
+        f.title_uz.toLowerCase().includes(query.toLowerCase())
       );
       setSearchedData(filteredData);
     } else {
@@ -58,35 +57,42 @@ function Cities(props) {
   };
 
   useEffect(() => {
-    fetchCities();
+    fetchblogs();
   }, []);
 
   const columns = [
     {
-      title: "ID",
+      title: "№",
       dataIndex: "",
-      render: (_, items, i) => <p>{i + 1}</p>,
-    },
-    {
-      title: "Name",
-      dataIndex: "name",
-      render: (text) => <p className="lg:text-base text-sm">{text}</p>,
-    },
-    {
-      title: "Text",
-      dataIndex: "text",
-      render: (text) => <p className="lg:text-base text-sm">{text}</p>,
+      render: (_, data, index) => (
+        <p className="lg:text-base text-sm">{index + 1}</p>
+      ),
     },
     {
       title: "Image",
-      dataIndex: "image_src",
+      dataIndex: "blog_images",
       render: (src) => (
         <img
-          src={`https://autoapi.dezinfeksiyatashkent.uz/api/uploads/images/${src}`}
-          alt=""
+          src={`https://api.dezinfeksiyatashkent.uz/api/uploads/images/${src[0].image.src}`}
+          alt="ee"
           className="lg:h-16 h-10 lg:w-16 w-10 object-cover"
         />
       ),
+    },
+    {
+      title: "Title uz",
+      dataIndex: "title_uz",
+      render: (text) => <p className="lg:text-base text-sm">{text}</p>,
+    },
+    {
+      title: "Text uz",
+      dataIndex: "text_uz",
+      render: (text) => <p className="lg:text-base text-sm">{text}</p>,
+    },
+    {
+      title: "Author",
+      dataIndex: "author",
+      render: (text) => <p className="lg:text-base text-sm">{text}</p>,
     },
     {
       title: "Action",
@@ -94,19 +100,19 @@ function Cities(props) {
       render: (_, item) => (
         <div className="flex items-center gap-4">
           <div
-            className="bg-blue-500 hover:bg-blue-400 text-white cursor-pointer py-1 lg:px-3 px-2 rounded-md lg:text-xl"
+            className="bg-blue-500 hover:bg-blue-400 text-white cursor-pointer py-1 lg:px-3 px-2 rounded-md"
             onClick={() => {
-              openEditCityModal();
-              setCityId(item.id);
+              openEditModelModal();
+              setBlogsId(item.id);
             }}
           >
-            <EditOutlined />
+            Edit
           </div>
           <div
-            className="bg-rose-500 hover:bg-rose-400 text-white cursor-pointer py-1 lg:px-3 px-2 rounded-md lg:text-xl"
+            className="bg-rose-500 hover:bg-rose-400 text-white cursor-pointer py-1 lg:px-3 px-2 rounded-md"
             onClick={() => handleDelete(item.id)}
           >
-            <DeleteOutlined />
+            Delete
           </div>
         </div>
       ),
@@ -115,9 +121,9 @@ function Cities(props) {
       title: (
         <button
           className="hidden lg:block bg-blue-500 hover:bg-blue-400 text-white lg:py-2 py-1 lg:px-4 px-2 rounded-md lg:text-base text-sm"
-          onClick={openCreateCityModal}
+          onClick={openCreateModelModal}
         >
-          Add cities
+          Add blogs
         </button>
       ),
       dataIndex: "key",
@@ -136,20 +142,20 @@ function Cities(props) {
       </div>
       <button
         className="lg:hidden my-4 bg-blue-500 hover:bg-blue-400 text-white lg:py-2 py-1 lg:px-4 px-2 rounded-md lg:text-base text-sm"
-        onClick={openCreateCityModal}
+        onClick={openCreateModelModal}
       >
-        Add cities
+        Add blogs
       </button>
       <Table
         loading={loading}
         columns={columns}
-        dataSource={searchQuery.length > 0 ? searchedData : cities}
+        dataSource={searchQuery.length > 0 ? searchedData : blogs}
         rowKey={"id"}
         scroll={{ x: 800 }}
       />
-      <CityModal getApi={fetchCities} data={cities} />
+      <BlogModal getApi={fetchblogs} data={blogs} />
     </>
   );
 }
 
-export default Cities;
+export default Blogs;

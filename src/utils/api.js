@@ -1,5 +1,5 @@
 export const apiRequest = async (endpoint, method = "GET", data = null) => {
-  const baseUrl = "https://autoapi.dezinfeksiyatashkent.uz/api/";
+  const baseUrl = "https://api.dezinfeksiyatashkent.uz/api/";
   const options = {
     method,
     headers: {},
@@ -18,7 +18,7 @@ export const apiRequest = async (endpoint, method = "GET", data = null) => {
   }
 
   // Include token if it exists for authenticated requests
-  const token = localStorage.getItem("token-autozoom");
+  const token = localStorage.getItem("token-uzloyal");
   if (token) {
     options.headers["Authorization"] = `Bearer ${token}`;
   }

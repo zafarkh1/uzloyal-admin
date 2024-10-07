@@ -4,15 +4,18 @@ export const useIdStore = create((set) => ({
   categoryId: "",
   setCategoryId: (id) => set({ categoryId: id }),
 
-  brandId: "",
-  setBrandId: (id) => set({ brandId: id }),
+  faqId: "",
+  setFaqId: (id) => set({ faqId: id }),
 
-  modelId: "",
-  setModelId: (id) => set({ modelId: id }),
+  newsId: "",
+  setNewsId: (id) => set({ newsId: id }),
 
-  cityId: "",
-  setCityId: (id) => set({ cityId: id }),
+  blogsId: "",
+  setBlogsId: (id) => set({ blogsId: id }),
 
-  carId: "",
-  setCarId: (id) => set({ carId: id }),
+  serviceId: "",
+  setServiceId: (id) => set({ serviceId: id }),
+
+  sourceId: "",
+  setSourceId: (id) => set({ sourceId: id }),
 }));

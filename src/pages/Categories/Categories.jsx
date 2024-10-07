@@ -1,25 +1,24 @@
 import { useEffect, useState } from "react";
 import debounce from "lodash.debounce";
 import { message, Table } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { apiRequest } from "../../utils/api";
 import { useModal } from "../../zustand/ModalStore";
+import { CategoryModal } from "../../utils/CategoryModal";
 import { useIdStore } from "../../zustand/IdStore";
-import { CarModal } from "../../utils/CarModal";
 
-function Cars(props) {
-  const [cars, setCars] = useState([]);
+function Categories(props) {
+  const [categories, setCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchedData, setSearchedData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { openCreateCarModal, openEditCarModal } = useModal();
-  const { setCarId } = useIdStore();
+  const { openCreateCategoryModal, openEditCategoryModal } = useModal();
+  const { setCategoryId } = useIdStore();
 
-  const fetchCars = async () => {
+  const fetchCategories = async () => {
     setLoading(true);
     try {
-      const fetchedCars = await apiRequest("cars");
-      setCars(fetchedCars.data);
+      const fetchedCategories = await apiRequest("categories");
+      setCategories(fetchedCategories.data);
     } catch (error) {
       console.error(error);
     } finally {
@@ -27,14 +26,18 @@ function Cars(props) {
     }
   };
 
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
   const handleDelete = async (id) => {
     setLoading(true);
     try {
-      await apiRequest(`cars/${id}`, "Delete");
-      message.success("Car deleted successfully!");
-      fetchCars();
+      await apiRequest(`categories/${id}`, "Delete");
+      message.success("Category deleted successfully!");
+      fetchCategories();
     } catch (error) {
-      message.error("Failed to delete car");
+      message.error("Failed to delete category");
     } finally {
       setLoading(false);
     }
@@ -42,8 +45,8 @@ function Cars(props) {
 
   const debouncedSearch = debounce((query) => {
     if (query.length > 0) {
-      const filteredData = cars.filter((f) =>
-        f.brand.title.toLowerCase().includes(query.toLowerCase())
+      const filteredData = categories.filter((f) =>
+        f.name.toLowerCase().includes(query.toLowerCase())
       );
       setSearchedData(filteredData);
     } else {
@@ -57,30 +60,23 @@ function Cars(props) {
     debouncedSearch(query);
   };
 
-  useEffect(() => {
-    fetchCars();
-  }, []);
-
   const columns = [
     {
-      title: "Brand",
-      dataIndex: "brand",
-      render: (text) => <p className="lg:text-base text-sm">{text.title}</p>,
+      title: "№",
+      dataIndex: "",
+      render: (_, data, index) => (
+        <p className="lg:text-base text-sm">{index + 1}</p>
+      ),
     },
     {
-      title: "Model",
-      dataIndex: "model",
-      render: (text) => <p className="lg:text-base text-sm">{text.name}</p>,
-    },
-    {
-      title: "Color",
-      dataIndex: "color",
+      title: "Name",
+      dataIndex: "name",
       render: (text) => <p className="lg:text-base text-sm">{text}</p>,
     },
     {
-      title: "City",
-      dataIndex: "city",
-      render: (text) => <p className="lg:text-base text-sm">{text.name}</p>,
+      title: "Description",
+      dataIndex: "description",
+      render: (text) => <p className="lg:text-base text-sm">{text}</p>,
     },
     {
       title: "Action",
@@ -88,19 +84,19 @@ function Cars(props) {
       render: (_, item) => (
         <div className="flex items-center gap-4">
           <div
-            className="bg-blue-500 hover:bg-blue-400 text-white cursor-pointer py-1 lg:px-3 px-2 rounded-md lg:text-xl"
+            className="bg-blue-500 hover:bg-blue-400 text-white cursor-pointer py-1 lg:px-3 px-2 rounded-md"
             onClick={() => {
-              openEditCarModal();
-              setCarId(item.id);
+              openEditCategoryModal();
+              setCategoryId(item.id);
             }}
           >
-            <EditOutlined />
+            Edit
           </div>
           <div
-            className="bg-rose-500 hover:bg-rose-400 text-white cursor-pointer py-1 lg:px-3 px-2 rounded-md lg:text-xl"
+            className="bg-rose-500 hover:bg-rose-400 text-white cursor-pointer py-1 lg:px-3 px-2 rounded-md"
             onClick={() => handleDelete(item.id)}
           >
-            <DeleteOutlined />
+            Delete
           </div>
         </div>
       ),
@@ -109,9 +105,9 @@ function Cars(props) {
       title: (
         <button
           className="hidden lg:block bg-blue-500 hover:bg-blue-400 text-white lg:py-2 py-1 lg:px-4 px-2 rounded-md lg:text-base text-sm"
-          onClick={openCreateCarModal}
+          onClick={openCreateCategoryModal}
         >
-          Add cars
+          Add categories
         </button>
       ),
       dataIndex: "key",
@@ -130,20 +126,21 @@ function Cars(props) {
       </div>
       <button
         className="lg:hidden my-4 bg-blue-500 hover:bg-blue-400 text-white lg:py-2 py-1 lg:px-4 px-2 rounded-md lg:text-base text-sm"
-        onClick={openCreateCarModal}
+        onClick={openCreateCategoryModal}
       >
-        Add cars
+        Add categories
       </button>
       <Table
         loading={loading}
         columns={columns}
-        dataSource={searchQuery.length > 0 ? searchedData : cars}
+        dataSource={searchQuery.length > 0 ? searchedData : categories}
         rowKey={"id"}
+        expandable={false}
         scroll={{ x: 800 }}
       />
-      <CarModal getApi={fetchCars} data={cars} />
+      <CategoryModal getApi={fetchCategories} data={categories} />
     </>
   );
 }
 
-export default Cars;
+export default Categories;

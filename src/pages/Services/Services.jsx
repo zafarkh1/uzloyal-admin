@@ -1,25 +1,24 @@
 import { useEffect, useState } from "react";
 import debounce from "lodash.debounce";
 import { message, Table } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { apiRequest } from "../../utils/api";
 import { useModal } from "../../zustand/ModalStore";
 import { useIdStore } from "../../zustand/IdStore";
-import { ModelModal } from "../../utils/ModelModal";
+import { ServiceModal } from "../../utils/ServiceModal";
 
-function Models(props) {
-  const [models, setModels] = useState([]);
+function Services(props) {
+  const [services, setServices] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchedData, setSearchedData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { openCreateModelModal, openEditModelModal } = useModal();
-  const { setModelId } = useIdStore();
+  const { openCreateCarModal, openEditCarModal } = useModal();
+  const { setServiceId } = useIdStore();
 
-  const fetchModels = async () => {
+  const fetchServices = async () => {
     setLoading(true);
     try {
-      const fetchedModels = await apiRequest("models");
-      setModels(fetchedModels.data);
+      const fetchedServices = await apiRequest("services");
+      setServices(fetchedServices.data);
     } catch (error) {
       console.error(error);
     } finally {
@@ -27,14 +26,16 @@ function Models(props) {
     }
   };
 
+  // console.log(services);
+
   const handleDelete = async (id) => {
     setLoading(true);
     try {
-      await apiRequest(`models/${id}`, "Delete");
-      message.success("Model deleted successfully!");
-      fetchModels();
+      await apiRequest(`services/${id}`, "Delete");
+      message.success("Services deleted successfully!");
+      fetchServices();
     } catch (error) {
-      message.error("Failed to delete model");
+      message.error("Failed to delete service");
     } finally {
       setLoading(false);
     }
@@ -42,8 +43,8 @@ function Models(props) {
 
   const debouncedSearch = debounce((query) => {
     if (query.length > 0) {
-      const filteredData = models.filter((f) =>
-        f.name.toLowerCase().includes(query.toLowerCase())
+      const filteredData = services.filter((f) =>
+        f.title_uz.toLowerCase().includes(query.toLowerCase())
       );
       setSearchedData(filteredData);
     } else {
@@ -58,18 +59,36 @@ function Models(props) {
   };
 
   useEffect(() => {
-    fetchModels();
+    fetchServices();
   }, []);
 
   const columns = [
     {
-      title: "Name",
-      dataIndex: "name",
+      title: "№",
+      dataIndex: "",
+      render: (_, data, index) => (
+        <p className="lg:text-base text-sm">{index + 1}</p>
+      ),
+    },
+    {
+      title: "Image",
+      dataIndex: "image_src",
+      render: (src) => (
+        <img
+          src={`https://api.dezinfeksiyatashkent.uz/api/uploads/images/${src}`}
+          alt="ee"
+          className="lg:h-16 h-10 lg:w-16 w-10 object-cover"
+        />
+      ),
+    },
+    {
+      title: "Title uz",
+      dataIndex: "title_uz",
       render: (text) => <p className="lg:text-base text-sm">{text}</p>,
     },
     {
-      title: "Brand",
-      dataIndex: "brand_title",
+      title: "Text uz",
+      dataIndex: "text_uz",
       render: (text) => <p className="lg:text-base text-sm">{text}</p>,
     },
     {
@@ -78,19 +97,19 @@ function Models(props) {
       render: (_, item) => (
         <div className="flex items-center gap-4">
           <div
-            className="bg-blue-500 hover:bg-blue-400 text-white cursor-pointer py-1 lg:px-3 px-2 rounded-md lg:text-xl"
+            className="bg-blue-500 hover:bg-blue-400 text-white cursor-pointer py-1 lg:px-3 px-2 rounded-md"
             onClick={() => {
-              openEditModelModal();
-              setModelId(item.id);
+              openEditCarModal();
+              setServiceId(item.id);
             }}
           >
-            <EditOutlined />
+            Edit
           </div>
           <div
-            className="bg-rose-500 hover:bg-rose-400 text-white cursor-pointer py-1 lg:px-3 px-2 rounded-md lg:text-xl"
+            className="bg-rose-500 hover:bg-rose-400 text-white cursor-pointer py-1 lg:px-3 px-2 rounded-md"
             onClick={() => handleDelete(item.id)}
           >
-            <DeleteOutlined />
+            Delete
           </div>
         </div>
       ),
@@ -99,9 +118,9 @@ function Models(props) {
       title: (
         <button
           className="hidden lg:block bg-blue-500 hover:bg-blue-400 text-white lg:py-2 py-1 lg:px-4 px-2 rounded-md lg:text-base text-sm"
-          onClick={openCreateModelModal}
+          onClick={openCreateCarModal}
         >
-          Add models
+          Add services
         </button>
       ),
       dataIndex: "key",
@@ -120,20 +139,20 @@ function Models(props) {
       </div>
       <button
         className="lg:hidden my-4 bg-blue-500 hover:bg-blue-400 text-white lg:py-2 py-1 lg:px-4 px-2 rounded-md lg:text-base text-sm"
-        onClick={openCreateModelModal}
+        onClick={openCreateCarModal}
       >
-        Add models
+        Add services
       </button>
       <Table
         loading={loading}
         columns={columns}
-        dataSource={searchQuery.length > 0 ? searchedData : models}
+        dataSource={searchQuery.length > 0 ? searchedData : services}
         rowKey={"id"}
         scroll={{ x: 800 }}
       />
-      <ModelModal getApi={fetchModels} data={models} />
+      <ServiceModal getApi={fetchServices} data={services} />
     </>
   );
 }
 
-export default Models;
+export default Services;

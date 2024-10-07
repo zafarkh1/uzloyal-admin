@@ -1,25 +1,24 @@
 import { useEffect, useState } from "react";
 import debounce from "lodash.debounce";
 import { message, Table } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { apiRequest } from "../../utils/api";
 import { useModal } from "../../zustand/ModalStore";
 import { useIdStore } from "../../zustand/IdStore";
-import { BrandModal } from "../../utils/BrandModal";
+import { NewsModal } from "../../utils/NewsModal";
 
-function Brands(props) {
-  const [brands, setBrands] = useState([]);
+function News(props) {
+  const [news, setNews] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchedData, setSearchedData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { openCreateBrandModal, openEditBrandModal } = useModal();
-  const { setBrandId } = useIdStore();
+  const { openCreateModelModal, openEditModelModal } = useModal();
+  const { setNewsId } = useIdStore();
 
-  const fetchBrands = async () => {
+  const fetchNews = async () => {
     setLoading(true);
     try {
-      const fetchedBrands = await apiRequest("brands");
-      setBrands(fetchedBrands?.data);
+      const fetchedNews = await apiRequest("news");
+      setNews(fetchedNews.data);
     } catch (error) {
       console.error(error);
     } finally {
@@ -30,11 +29,11 @@ function Brands(props) {
   const handleDelete = async (id) => {
     setLoading(true);
     try {
-      await apiRequest(`brands/${id}`, "Delete");
-      message.success("Brand deleted successfully!");
-      fetchBrands();
+      await apiRequest(`news/${id}`, "Delete");
+      message.success("News deleted successfully!");
+      fetchNews();
     } catch (error) {
-      message.error("Failed to delete brand");
+      message.error("Failed to delete news");
     } finally {
       setLoading(false);
     }
@@ -42,8 +41,8 @@ function Brands(props) {
 
   const debouncedSearch = debounce((query) => {
     if (query.length > 0) {
-      const filteredData = brands.filter((f) =>
-        f.title.toLowerCase().includes(query.toLowerCase())
+      const filteredData = news.filter((f) =>
+        f.title_uz.toLowerCase().includes(query.toLowerCase())
       );
       setSearchedData(filteredData);
     } else {
@@ -58,25 +57,42 @@ function Brands(props) {
   };
 
   useEffect(() => {
-    fetchBrands();
+    fetchNews();
   }, []);
 
   const columns = [
     {
-      title: "Title",
-      dataIndex: "title",
-      render: (text) => <p className="lg:text-base text-sm">{text}</p>,
+      title: "№",
+      dataIndex: "",
+      render: (_, data, index) => (
+        <p className="lg:text-base text-sm">{index + 1}</p>
+      ),
     },
     {
       title: "Image",
-      dataIndex: "image_src",
+      dataIndex: "news_images",
       render: (src) => (
         <img
-          src={`https://autoapi.dezinfeksiyatashkent.uz/api/uploads/images/${src}`}
+          src={`https://api.dezinfeksiyatashkent.uz/api/uploads/images/${src[0]["image.src"]}`}
           alt=""
-          className="lg:h-16 h-10 lg:w-28 w-20 object-contain"
+          className="lg:h-16 h-10 lg:w-16 w-10 object-cover"
         />
       ),
+    },
+    {
+      title: "Title uz",
+      dataIndex: "title_uz",
+      render: (text) => <p className="lg:text-base text-sm">{text}</p>,
+    },
+    {
+      title: "Text uz",
+      dataIndex: "text_uz",
+      render: (text) => <p className="lg:text-base text-sm">{text}</p>,
+    },
+    {
+      title: "Author",
+      dataIndex: "author",
+      render: (text) => <p className="lg:text-base text-sm">{text}</p>,
     },
     {
       title: "Action",
@@ -84,19 +100,19 @@ function Brands(props) {
       render: (_, item) => (
         <div className="flex items-center gap-4">
           <div
-            className="bg-blue-500 hover:bg-blue-400 text-white cursor-pointer py-1 lg:px-3 px-2 rounded-md lg:text-xl"
+            className="bg-blue-500 hover:bg-blue-400 text-white cursor-pointer py-1 lg:px-3 px-2 rounded-md"
             onClick={() => {
-              openEditBrandModal();
-              setBrandId(item.id);
+              openEditModelModal();
+              setNewsId(item.id);
             }}
           >
-            <EditOutlined />
+            Edit
           </div>
           <div
-            className="bg-rose-500 hover:bg-rose-400 text-white cursor-pointer py-1 lg:px-3 px-2 rounded-md lg:text-xl"
+            className="bg-rose-500 hover:bg-rose-400 text-white cursor-pointer py-1 lg:px-3 px-2 rounded-md"
             onClick={() => handleDelete(item.id)}
           >
-            <DeleteOutlined />
+            Delete
           </div>
         </div>
       ),
@@ -105,9 +121,9 @@ function Brands(props) {
       title: (
         <button
           className="hidden lg:block bg-blue-500 hover:bg-blue-400 text-white lg:py-2 py-1 lg:px-4 px-2 rounded-md lg:text-base text-sm"
-          onClick={openCreateBrandModal}
+          onClick={openCreateModelModal}
         >
-          Add brands
+          Add news
         </button>
       ),
       dataIndex: "key",
@@ -126,20 +142,20 @@ function Brands(props) {
       </div>
       <button
         className="lg:hidden my-4 bg-blue-500 hover:bg-blue-400 text-white lg:py-2 py-1 lg:px-4 px-2 rounded-md lg:text-base text-sm"
-        onClick={openCreateBrandModal}
+        onClick={openCreateModelModal}
       >
-        Add brands
+        Add news
       </button>
       <Table
         loading={loading}
         columns={columns}
-        dataSource={searchQuery.length > 0 ? searchedData : brands}
+        dataSource={searchQuery.length > 0 ? searchedData : news}
         rowKey={"id"}
         scroll={{ x: 800 }}
       />
-      <BrandModal getApi={fetchBrands} data={brands} />
+      <NewsModal getApi={fetchNews} data={news} />
     </>
   );
 }
 
-export default Brands;
+export default News;

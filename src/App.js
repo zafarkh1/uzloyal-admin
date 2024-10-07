@@ -1,13 +1,13 @@
 import { Route, Routes } from "react-router-dom";
-import Layout from "./layout/Layout";
-import Dashboard from "./pages/Dashboard/Dashboard";
-import Cars from "./pages/Cars/Cars";
-import Cities from "./pages/Cities/Cities";
-import Brands from "./pages/Brands/Brands";
-import Models from "./pages/Models/Models";
-import Settings from "./pages/Settings/Settings";
-import Login from "./components/Login/Login";
 import { useTokenStore } from "./zustand/TokenStore";
+import Layout from "./layout/Layout";
+import Login from "./components/Login/Login";
+import Faqs from "./pages/Faqs/Faqs";
+import Categories from "./pages/Categories/Categories";
+import News from "./pages/News/News";
+import Blogs from "./pages/Blogs/Blogs";
+import Services from "./pages/Services/Services";
+import Sources from "./pages/Sources/Sources";
 
 function App() {
   const { token } = useTokenStore();
@@ -17,12 +17,12 @@ function App() {
       {token && token.includes("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9") ? (
         <Routes>
           <Route path="/" element={<Layout />}>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="cars" element={<Cars />} />
-            <Route path="cities" element={<Cities />} />
-            <Route path="brands" element={<Brands />} />
-            <Route path="models" element={<Models />} />
+            <Route path="/" element={<Categories />} />
+            <Route path="faqs" element={<Faqs />} />
+            <Route path="news" element={<News />} />
+            <Route path="blogs" element={<Blogs />} />
+            <Route path="services" element={<Services />} />
+            <Route path="sources" element={<Sources />} />
           </Route>
         </Routes>
       ) : (

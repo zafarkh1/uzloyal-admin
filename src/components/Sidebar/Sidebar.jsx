@@ -1,51 +1,49 @@
-import { HiOfficeBuilding } from "react-icons/hi";
-import { Menu } from "antd";
-import {
-  HomeOutlined,
-  SettingOutlined,
-  CarOutlined,
-  SnippetsOutlined,
-  ShopOutlined,
-} from "@ant-design/icons";
-import { useSidebarCollapse } from "../../zustand/SidebarCollapseStore";
 import { useNavigate } from "react-router-dom";
+import { Menu } from "antd";
+import { SnippetsOutlined } from "@ant-design/icons";
+import { HiOfficeBuilding } from "react-icons/hi";
+import { BiCategory } from "react-icons/bi";
+import { IoMdPeople } from "react-icons/io";
+import { MdOutlineMiscellaneousServices } from "react-icons/md";
+import { GrResources } from "react-icons/gr";
+import { useSidebarCollapse } from "../../zustand/SidebarCollapseStore";
 
 const items = [
   {
     key: "1",
-    icon: <HomeOutlined style={{ fontSize: "1.2rem" }} />,
-    label: "Dashboard",
+    icon: <BiCategory style={{ fontSize: "1.2rem" }} />,
+    label: "Categories",
     link: "/",
   },
   {
     key: "2",
-    icon: <SettingOutlined style={{ fontSize: "1.2rem" }} />,
-    label: "Settings",
-    link: "/settings",
+    icon: <IoMdPeople style={{ fontSize: "1.2rem" }} />,
+    label: "Faqs",
+    link: "/faqs",
   },
   {
     key: "3",
-    icon: <ShopOutlined style={{ fontSize: "1.2rem" }} />,
-    label: "Brands",
-    link: "/brands",
+    icon: <SnippetsOutlined style={{ fontSize: "1.2rem" }} />,
+    label: "News",
+    link: "/news",
   },
   {
     key: "4",
-    icon: <SnippetsOutlined style={{ fontSize: "1.2rem" }} />,
-    label: "Models",
-    link: "/models",
+    icon: <HiOfficeBuilding style={{ fontSize: "1.2rem" }} />,
+    label: "Blogs",
+    link: "/blogs",
+  },
+  {
+    key: "5",
+    icon: <MdOutlineMiscellaneousServices style={{ fontSize: "1.2rem" }} />,
+    label: "Services",
+    link: "/services",
   },
   {
     key: "6",
-    icon: <HiOfficeBuilding style={{ fontSize: "1.2rem" }} />,
-    label: "Cities",
-    link: "/cities",
-  },
-  {
-    key: "7",
-    icon: <CarOutlined style={{ fontSize: "1.2rem" }} />,
-    label: "Cars",
-    link: "/cars",
+    icon: <GrResources style={{ fontSize: "1.2rem" }} />,
+    label: "Sources",
+    link: "/sources",
   },
 ];
 
@@ -72,11 +70,11 @@ function Sidebar(props) {
           <img
             src="https://autozoom-admin-nine.vercel.app/assets/autozoom-CM99tOti.svg"
             alt="logo"
-            className="mb-4"
+            className="mb-6 px-2"
           />
         ) : (
           <p className="text-[#a6adb4] hover:text-white text-center lg:text-2xl font-semibold">
-            AutozoomAdmin
+            UzLoyalAdmin
           </p>
         )}
       </a>
