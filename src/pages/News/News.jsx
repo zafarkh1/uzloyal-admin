@@ -73,7 +73,7 @@ function News(props) {
       dataIndex: "news_images",
       render: (src) => (
         <img
-          src={`https://api.dezinfeksiyatashkent.uz/api/uploads/images/${src[0]["image.src"]}`}
+          src={`https://api.dezinfeksiyatashkent.uz/api/uploads/images/${src?.[0]?.["image.src"]}`}
           alt=""
           className="lg:h-16 h-10 lg:w-16 w-10 object-cover"
         />
